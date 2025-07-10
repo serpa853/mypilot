@@ -278,6 +278,8 @@
 </head>
 <body>
 <div id="contadorPilotos" aria-label="Total de pilotos cadastrados">0 pilotos</div>
+
+
 <div id="app">
   <nav role="navigation" aria-label="Menu principal">
     <div id="logo" aria-label="Logo do sistema My Pilot">
@@ -300,6 +302,7 @@
     <button id="btnCadastro" type="button">Cadastrar Piloto</button>
     <button id="btnRelatorio" type="button">Relatório Pilotos</button>
     <button id="btnResumoEquipes" type="button">Resumo por Equipe</button>
+<button id="btnRelatorioCamisetas" type="button">Relatório Camisetas</button>
     <button id="btnGerenciarEquipes" type="button">Gerenciar Equipes</button>
     <button id="btnEditarEvento" type="button">Editar Nome Evento</button>
     <button id="btnSortearInscricao" type="button">Sortear Inscrição</button>
@@ -357,6 +360,7 @@
     const endereco = piloto?.endereco || '';
     const cidade = piloto?.cidade || '';
     const equipeSelecionada = piloto?.equipe || '';
+    const camisetaSelecionada = piloto?.camiseta || '';
 
     let opcoesEquipe = '<option value="">-- Selecione a equipe --</option>';
     equipes.forEach(e => {
@@ -377,7 +381,19 @@
         <label for="cidade">Cidade:</label>
         <input type="text" id="cidade" name="cidade" value="${cidade}" autocomplete="off" />
 
-        <label for="equipe">Equipe:</label>
+        <label for="camiseta">Tamanho da Camiseta:</label>
+    <select id="camiseta" name="camiseta" required>
+      <option value="">-- Selecione --</option>
+      <option value="P" ${camisetaSelecionada === 'P' ? 'selected' : ''}>P</option>
+      <option value="M" ${camisetaSelecionada === 'M' ? 'selected' : ''}>M</option>
+      <option value="G" ${camisetaSelecionada === 'G' ? 'selected' : ''}>G</option>
+      <option value="GG" ${camisetaSelecionada === 'GG' ? 'selected' : ''}>GG</option>
+      <option value="XG" ${camisetaSelecionada === 'XG' ? 'selected' : ''}>XG</option>
+      <option value="XXG" ${camisetaSelecionada === 'XXG' ? 'selected' : ''}>XXG</option>
+      <option value="XGG" ${camisetaSelecionada === 'XGG' ? 'selected' : ''}>XGG</option>
+    </select>
+
+    <label for="equipe">Equipe:</label>
         <select id="equipe" name="equipe">${opcoesEquipe}</select>
 
         <button type="submit">${piloto ? 'Salvar Alterações' : 'Cadastrar'}</button>
@@ -392,6 +408,7 @@
       const enderecoInput = document.getElementById('endereco').value.trim().toUpperCase();
       const cidadeInput = document.getElementById('cidade').value.trim().toUpperCase();
       const equipeInput = document.getElementById('equipe').value.toUpperCase();
+      const camisetaInput = document.getElementById('camiseta').value.toUpperCase();
 
       const msgForm = document.getElementById('msgForm');
       msgForm.textContent = '';
@@ -417,11 +434,14 @@
             cpf: cpfInput,
             endereco: enderecoInput,
             cidade: cidadeInput,
-            equipe: equipeInput
+            equipe: equipeInput,
+            camiseta: camisetaInput,
+            camiseta: camisetaInput
           };
           salvarPilotos();
           atualizarTotalPilotos();
-          mostrarRelatorio();
+  
+          mostrarRelatorio(); 
           abrirModalImpressao(pilotos[index]);
         }
       } else {
@@ -436,12 +456,15 @@
           cpf: cpfInput,
           endereco: enderecoInput,
           cidade: cidadeInput,
-          equipe: equipeInput
+          equipe: equipeInput,
+            camiseta: camisetaInput,
+            camiseta: camisetaInput
         };
         pilotos.push(novoPiloto);
         salvarPilotos();
         atualizarTotalPilotos();
-        mostrarRelatorio();
+  
+        mostrarRelatorio(); 
         abrirModalImpressao(novoPiloto);
       }
     });
@@ -505,7 +528,8 @@
           pilotos = pilotos.filter(p => p.cpf !== cpf);
           salvarPilotos();
           atualizarTotalPilotos();
-          mostrarRelatorio();
+  
+          mostrarRelatorio(); 
         }
       });
     });
@@ -625,6 +649,7 @@ function imprimirFichaCurriculo(piloto) {
     <div class="campo"><label>Endereço</label><div class="linha" style="font-family:'Orbitron', sans-serif;">${piloto.endereco}</div></div>
     <div class="campo"><label>Cidade</label><div class="linha" style="font-family:'Orbitron', sans-serif;">${piloto.cidade}</div></div>
     <div class="campo"><label>Equipe</label><div class="linha" style="font-family:'Orbitron', sans-serif;">${piloto.equipe || '-'}</div></div>
+    <div class="campo"><label>Tamanho Camiseta</label><div class="linha" style="font-family:'Orbitron', sans-serif;">${piloto.camiseta || '-'}</div></div>
     <div class="campo"><label>Evento</label><div class="linha" style="font-family:'Orbitron', sans-serif;">${nomeEvento}</div></div>
     <div class="campo"><label>Assinatura do Responsável</label><div class="linha" style="font-family:'Orbitron', sans-serif;">&nbsp;</div></div>
     <footer>Desenvolvido por Julio Serpa </footer>
@@ -757,7 +782,7 @@ function imprimirFichaCurriculo(piloto) {
           });
           salvarEquipes();
           salvarPilotos();
-          mostrarRelatorio();
+          mostrarRelatorio(); 
           gerenciarEquipes();
         }
       });
@@ -783,7 +808,8 @@ function imprimirFichaCurriculo(piloto) {
       }
       salvarNomeEvento(novoNome);
       atualizarTotalPilotos();
-      mostrarRelatorio();
+  
+      mostrarRelatorio(); 
     });
   }
 
@@ -804,12 +830,57 @@ function imprimirFichaCurriculo(piloto) {
     alert(`🎉 Piloto sorteado:\n\nNome: ${sorteado.nome}\nCPF: ${sorteado.cpf}`);
   });
 
+  
+  function atualizarPainelCamisetas() {
+    const tamanhos = ['P', 'M', 'G', 'GG', 'XG', 'XXG', 'XGG'];
+    const counts = {};
+    tamanhos.forEach(t => counts[t] = 0);
+    pilotos.forEach(p => {
+      if (counts[p.camiseta]) counts[p.camiseta]++;
+    });
+    const painel = document.getElementById('painelCamisetas');
+    if (painel) {
+      painel.innerHTML = '👕 Camisetas<br>' + tamanhos.map(t => `${t}: ${counts[t]}`).join(' | ');
+    }
+  }
+
+
+  
+  document.getElementById('btnRelatorioCamisetas').addEventListener('click', () => mostrarRelatorioCamisetas());
+
+  function mostrarRelatorioCamisetas() {
+    tituloPrincipal.textContent = 'Relatório de Camisetas';
+
+    const tamanhos = ['P', 'M', 'G', 'GG', 'XG', 'XXG', 'XGG'];
+    const contagem = {};
+    tamanhos.forEach(t => contagem[t] = 0);
+
+    pilotos.forEach(p => {
+      const t = p.camiseta;
+      if (contagem[t] !== undefined) {
+        contagem[t]++;
+      }
+    });
+
+    let html = '<ul class="resumo-equipes">';
+    tamanhos.forEach(t => {
+      html += `<li><strong>${t}:</strong> ${contagem[t]} camiseta(s)</li>`;
+    });
+    html += '</ul>';
+
+    conteudo.innerHTML = html;
+  }
+
+
   // Inicialização
   atualizarTotalPilotos();
-  mostrarRelatorio();
+  
+  mostrarRelatorio(); 
 
 </script>
 </body>
 </html>
+
+
 
 
