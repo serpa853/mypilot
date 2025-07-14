@@ -302,6 +302,7 @@
     <button id="btnCadastro" type="button">Cadastrar Piloto</button>
     <button id="btnRelatorio" type="button">Relatório Pilotos</button>
     <button id="btnResumoEquipes" type="button">Resumo por Equipe</button>
+<button id="btnRelatorioCamisetas" type="button">Relatório Camisetas</button>
     <button id="btnGerenciarEquipes" type="button">Gerenciar Equipes</button>
     <button id="btnEditarEvento" type="button">Editar Nome Evento</button>
     <button id="btnSortearInscricao" type="button">Sortear Inscrição</button>
@@ -844,6 +845,33 @@ function imprimirFichaCurriculo(piloto) {
   }
 
 
+  
+  document.getElementById('btnRelatorioCamisetas').addEventListener('click', () => mostrarRelatorioCamisetas());
+
+  function mostrarRelatorioCamisetas() {
+    tituloPrincipal.textContent = 'Relatório de Camisetas';
+
+    const tamanhos = ['P', 'M', 'G', 'GG', 'XG', 'XXG', 'XGG'];
+    const contagem = {};
+    tamanhos.forEach(t => contagem[t] = 0);
+
+    pilotos.forEach(p => {
+      const t = p.camiseta;
+      if (contagem[t] !== undefined) {
+        contagem[t]++;
+      }
+    });
+
+    let html = '<ul class="resumo-equipes">';
+    tamanhos.forEach(t => {
+      html += `<li><strong>${t}:</strong> ${contagem[t]} camiseta(s)</li>`;
+    });
+    html += '</ul>';
+
+    conteudo.innerHTML = html;
+  }
+
+
   // Inicialização
   atualizarTotalPilotos();
   
@@ -852,9 +880,3 @@ function imprimirFichaCurriculo(piloto) {
 </script>
 </body>
 </html>
-
-
-
-
-
-
